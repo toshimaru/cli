@@ -425,6 +425,20 @@ func matchSkillConventions(entry treeEntry) *skillMatch {
 		return &skillMatch{entry: entry, name: skillName, namespace: namespace, skillDir: dir, convention: "plugins"}
 	}
 
+	// .agents/skills is the standard shared cross-agent project directory, not
+	// an agent-specific hidden directory. Skills stored there are discoverable
+	// by default without requiring --allow-hidden-dirs.
+	if parentDir == ".agents/skills" {
+		return &skillMatch{entry: entry, name: skillName, skillDir: dir, convention: "skills"}
+	}
+	if grandparentDir == ".agents/skills" {
+		namespace := path.Base(parentDir)
+		if !validateName(namespace) {
+			return nil
+		}
+		return &skillMatch{entry: entry, name: skillName, namespace: namespace, skillDir: dir, convention: "skills-namespaced"}
+	}
+
 	// Deeply nested skills/ directory: <prefix>/skills/<name>/SKILL.md
 	// Matches skills/ at any depth, not just at the repository root.
 	// Exclude paths with dot-prefixed segments (handled by
@@ -473,6 +487,13 @@ func matchHiddenDirConventions(entry treeEntry) *skillMatch {
 	// .{host}/skills
 	// .{host}/skills/{scope}
 	parentDir := path.Dir(dir)
+	grandparentDir := path.Dir(parentDir)
+
+	// .agents/skills is the standard shared cross-agent project directory;
+	// matchSkillConventions handles it as a standard convention.
+	if parentDir == ".agents/skills" || grandparentDir == ".agents/skills" {
+		return nil
+	}
 
 	// .{host}/skills/*/SKILL.md
 	if path.Base(parentDir) == "skills" {
@@ -483,7 +504,6 @@ func matchHiddenDirConventions(entry treeEntry) *skillMatch {
 	}
 
 	// .{host}/skills/{scope}/*/SKILL.md
-	grandparentDir := path.Dir(parentDir)
 	if path.Base(grandparentDir) == "skills" {
 		hiddenRoot := path.Dir(grandparentDir)
 		if path.Dir(hiddenRoot) == "." && strings.HasPrefix(hiddenRoot, ".") {

@@ -142,6 +142,19 @@ func TestMatchSkillConventions(t *testing.T) {
 			wantNil: true,
 		},
 		{
+			name:           ".agents/skills is standard convention",
+			path:           ".agents/skills/git-commit/SKILL.md",
+			wantName:       "git-commit",
+			wantConvention: "skills",
+		},
+		{
+			name:           ".agents/skills namespaced is standard convention",
+			path:           ".agents/skills/monalisa/git-commit/SKILL.md",
+			wantName:       "git-commit",
+			wantNamespace:  "monalisa",
+			wantConvention: "skills-namespaced",
+		},
+		{
 			name:    "nested plugins skills not matched as plain skills",
 			path:    "vendor/plugins/hubot/skills/pr-summary/SKILL.md",
 			wantNil: true,
@@ -178,10 +191,14 @@ func TestMatchHiddenDirConventions(t *testing.T) {
 			wantConvention: "hidden-dir",
 		},
 		{
-			name:           "agents skills directory",
-			path:           ".agents/skills/git-commit/SKILL.md",
-			wantName:       "git-commit",
-			wantConvention: "hidden-dir",
+			name:    "agents skills directory is not hidden-dir",
+			path:    ".agents/skills/git-commit/SKILL.md",
+			wantNil: true,
+		},
+		{
+			name:    "agents skills namespaced directory is not hidden-dir",
+			path:    ".agents/skills/monalisa/git-commit/SKILL.md",
+			wantNil: true,
 		},
 		{
 			name:           "github skills directory",
@@ -946,6 +963,23 @@ func TestDiscoverSkills(t *testing.T) {
 			},
 			wantSkills: []string{"code-review", "tf-lint"},
 		},
+		{
+			name: "discovers .agents/skills as standard convention",
+			stubs: func(reg *httpmock.Registry) {
+				reg.Register(
+					httpmock.REST("GET", "repos/monalisa/octocat-skills/git/trees/abc123"),
+					httpmock.JSONResponse(map[string]interface{}{
+						"sha": "abc123", "truncated": false,
+						"tree": []map[string]interface{}{
+							{"path": ".agents/skills/git-commit", "type": "tree", "sha": "tree-sha-1"},
+							{"path": ".agents/skills/git-commit/SKILL.md", "type": "blob", "sha": "blob-1"},
+							{"path": ".agents/skills/monalisa/code-review", "type": "tree", "sha": "tree-sha-2"},
+							{"path": ".agents/skills/monalisa/code-review/SKILL.md", "type": "blob", "sha": "blob-2"},
+						},
+					}))
+			},
+			wantSkills: []string{"git-commit", "code-review"},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -1006,7 +1040,7 @@ func TestDiscoverSkillsWithOptions(t *testing.T) {
 		wantErr    string
 	}{
 		{
-			name:       "returns hidden-dir skills",
+			name:       "returns all skills including hidden-dir",
 			tree:       hiddenDirTree,
 			wantSkills: []string{"code-review", "git-commit"},
 		},
