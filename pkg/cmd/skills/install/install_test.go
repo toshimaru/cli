@@ -426,6 +426,37 @@ func TestInstallRun(t *testing.T) {
 			wantStdout: "Installed git-commit",
 		},
 		{
+			name:  "remote install with --agent generic and --scope user",
+			isTTY: true,
+			stubs: func(reg *httpmock.Registry) {
+				stubResolveVersion(reg, "monalisa", "skills-repo", "v1.0.0", "abc123")
+				stubDiscoverTree(reg, "monalisa", "skills-repo", "abc123",
+					singleSkillTreeJSON("git-commit", "treeSHA", "blobSHA"))
+				stubInstallFiles(reg, "monalisa", "skills-repo", "treeSHA", "blobSHA", gitCommitContent)
+			},
+			opts: func(ios *iostreams.IOStreams, reg *httpmock.Registry) *InstallOptions {
+				t.Helper()
+				return &InstallOptions{
+					IO:           ios,
+					HttpClient:   func() (*http.Client, error) { return &http.Client{Transport: reg}, nil },
+					GitClient:    &git.Client{RepoDir: t.TempDir()},
+					SkillSource:  "monalisa/skills-repo",
+					SkillName:    "git-commit",
+					Agent:        "generic",
+					Scope:        "user",
+					ScopeChanged: true,
+				}
+			},
+			verify: func(t *testing.T) {
+				t.Helper()
+				homeDir, err := os.UserHomeDir()
+				require.NoError(t, err)
+				_, err = os.Stat(filepath.Join(homeDir, ".agents", "skills", "git-commit", "SKILL.md"))
+				require.NoError(t, err)
+			},
+			wantStdout: "Installed git-commit",
+		},
+		{
 			name:  "remote install with --dir bypasses scope resolution",
 			isTTY: true,
 			stubs: func(reg *httpmock.Registry) {
@@ -1357,7 +1388,13 @@ func TestInstallRun(t *testing.T) {
 				t.Helper()
 				pm := &prompter.PrompterMock{
 					MultiSelectFunc: func(prompt string, defaults []string, options []string) ([]int, error) {
-						return []int{0, 1}, nil // select two agents
+						var indices []int
+						for i, label := range options {
+							if label == "GitHub Copilot" || label == "Claude Code" {
+								indices = append(indices, i)
+							}
+						}
+						return indices, nil
 					},
 					SelectFunc: func(prompt, defaultValue string, options []string) (int, error) {
 						return 0, nil // project scope

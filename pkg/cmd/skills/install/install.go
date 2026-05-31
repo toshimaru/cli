@@ -86,8 +86,8 @@ func NewCmdInstall(f *cmdutil.Factory, telemetry ghtelemetry.CommandRecorder, ru
 			scope (in your home directory, available everywhere).
 
 			A wide range of AI coding agents are supported, including GitHub
-			Copilot, Claude Code, Cursor, Codex, Gemini CLI, Antigravity, Amp,
-			Goose, Junie, OpenCode, Windsurf, and many more.
+			Copilot, Generic agent, Claude Code, Cursor, Codex, Gemini CLI,
+			Antigravity, Amp, Goose, Junie, OpenCode, Windsurf, and many more.
 
 			Supported %[1]s--agent%[1]s values:
 
@@ -97,10 +97,11 @@ func NewCmdInstall(f *cmdutil.Factory, telemetry ghtelemetry.CommandRecorder, ru
 			custom directory. The default scope is %[1]sproject%[1]s, and the default
 			agent is %[1]sgithub-copilot%[1]s (when running non-interactively).
 
-			At project scope, several agents (including GitHub Copilot, Cursor,
-			Codex, Gemini CLI, Antigravity, Amp, Cline, OpenCode, and Warp) share
-			the %[1]s.agents/skills%[1]s directory. If you select multiple hosts that
-			resolve to the same destination, each skill is installed there only once.
+			At project scope, several agents (including GitHub Copilot, Generic
+			agent, Cursor, Codex, Gemini CLI, Antigravity, Amp, Cline, OpenCode,
+			and Warp) share the %[1]s.agents/skills%[1]s directory. If you select
+			multiple hosts that resolve to the same destination, each skill is
+			installed there only once.
 
 			The first argument is a GitHub repository in %[1]sOWNER/REPO%[1]s format.
 			Use %[1]s--from-local%[1]s to install from a local directory instead.
@@ -163,6 +164,9 @@ func NewCmdInstall(f *cmdutil.Factory, telemetry ghtelemetry.CommandRecorder, ru
 
 			# Install for Claude Code at user scope
 			$ gh skill install github/awesome-copilot git-commit --agent claude-code --scope user
+
+			# Install to the generic user skills directory
+			$ gh skill install github/awesome-copilot git-commit --agent generic --scope user
 
 			# Pin to a specific git ref
 			$ gh skill install github/awesome-copilot git-commit --pin v2.0.0
