@@ -851,6 +851,10 @@ func resolveHosts(opts *InstallOptions, canPrompt bool) ([]*registry.AgentHost, 
 		return []*registry.AgentHost{h}, nil
 	}
 
+	if opts.Dir != "" {
+		return nil, nil
+	}
+
 	if !canPrompt {
 		h, err := registry.FindByID(registry.DefaultAgentID)
 		if err != nil {
@@ -915,6 +919,13 @@ func resolveScope(opts *InstallOptions, canPrompt bool) (registry.Scope, error) 
 func buildInstallPlans(opts *InstallOptions, selectedSkills []discovery.Skill, selectedHosts []*registry.AgentHost, scope registry.Scope, gitRoot, homeDir string, canPrompt bool) ([]installPlan, error) {
 	byDir := make(map[string]*installPlan)
 	orderedDirs := make([]string, 0, len(selectedHosts))
+
+	// When --dir is specified without --agent, selectedHosts is nil. Create a
+	// single plan for the custom directory without associating any agent host.
+	if opts.Dir != "" && len(selectedHosts) == 0 {
+		byDir[opts.Dir] = &installPlan{dir: opts.Dir}
+		orderedDirs = append(orderedDirs, opts.Dir)
+	}
 
 	for _, host := range selectedHosts {
 		targetDir, err := resolveInstallDir(opts, host, scope, gitRoot, homeDir)
