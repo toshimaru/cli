@@ -165,8 +165,8 @@ func NewCmdInstall(f *cmdutil.Factory, telemetry ghtelemetry.CommandRecorder, ru
 			# Install for Claude Code at user scope
 			$ gh skill install github/awesome-copilot git-commit --agent claude-code --scope user
 
-			# Install to the generic user skills directory
-			$ gh skill install github/awesome-copilot git-commit --agent generic --scope user
+			# Install to the generic ~/.agents/skills directory
+			$ gh skill install github/awesome-copilot git-commit --agent generic-agent --scope user
 
 			# Pin to a specific git ref
 			$ gh skill install github/awesome-copilot git-commit --pin v2.0.0

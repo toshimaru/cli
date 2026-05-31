@@ -16,7 +16,7 @@ func TestFindByID(t *testing.T) {
 		wantErr  string
 	}{
 		{name: "github-copilot", id: "github-copilot", wantName: "GitHub Copilot"},
-		{name: "generic", id: "generic", wantName: "Generic agent"},
+		{name: "generic agent", id: "generic-agent", wantName: "Generic agent"},
 		{name: "claude-code", id: "claude-code", wantName: "Claude Code"},
 		{name: "cursor", id: "cursor", wantName: "Cursor"},
 		{name: "codex", id: "codex", wantName: "Codex"},
@@ -65,8 +65,8 @@ func TestInstallDir(t *testing.T) {
 			wantDir: filepath.Join("/home/monalisa", ".copilot", "skills"),
 		},
 		{
-			name:    "generic user scope",
-			hostID:  "generic",
+			name:    "generic agent user scope",
+			hostID:  "generic-agent",
 			scope:   ScopeUser,
 			gitRoot: "/tmp/monalisa-repo",
 			homeDir: "/home/monalisa",

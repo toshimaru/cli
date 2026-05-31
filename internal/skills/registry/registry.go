@@ -51,7 +51,7 @@ var Agents = []AgentHost{
 		UserDir:    ".copilot/skills",
 	},
 	{
-		ID:         "generic",
+		ID:         "generic-agent",
 		Name:       "Generic agent",
 		ProjectDir: sharedProjectSkillsDir,
 		UserDir:    sharedProjectSkillsDir,

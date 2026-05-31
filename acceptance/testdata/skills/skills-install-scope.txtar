@@ -9,5 +9,5 @@ exec gh skill install github/awesome-copilot git-commit --scope user --force --a
 exists $HOME/.copilot/skills/git-commit/SKILL.md
 
 # Install with --scope user can target the generic agent skills directory
-exec gh skill install github/awesome-copilot git-commit --scope user --force --agent generic
+exec gh skill install github/awesome-copilot git-commit --scope user --force --agent generic-agent
 exists $HOME/.agents/skills/git-commit/SKILL.md

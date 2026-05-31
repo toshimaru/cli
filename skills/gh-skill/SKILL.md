@@ -41,7 +41,7 @@ gh skill install ./local-skills-repo --from-local
 
 Useful flags:
 
-- `--agent <id>` - target host (e.g. `github-copilot`, `generic`,
+- `--agent <id>` - target host (e.g. `github-copilot`, `generic-agent`,
   `claude-code`, `cursor`, `codex`, `gemini-cli`). Repeat for multiple. Default is
   `github-copilot` when non-interactive. You should know what agent you are,
   so set this appropriately to install for yourself.

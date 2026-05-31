@@ -426,7 +426,7 @@ func TestInstallRun(t *testing.T) {
 			wantStdout: "Installed git-commit",
 		},
 		{
-			name:  "remote install with --agent generic and --scope user",
+			name:  "remote install with --agent generic-agent and --scope user",
 			isTTY: true,
 			stubs: func(reg *httpmock.Registry) {
 				stubResolveVersion(reg, "monalisa", "skills-repo", "v1.0.0", "abc123")
@@ -442,7 +442,7 @@ func TestInstallRun(t *testing.T) {
 					GitClient:    &git.Client{RepoDir: t.TempDir()},
 					SkillSource:  "monalisa/skills-repo",
 					SkillName:    "git-commit",
-					Agent:        "generic",
+					Agent:        "generic-agent",
 					Scope:        "user",
 					ScopeChanged: true,
 				}
